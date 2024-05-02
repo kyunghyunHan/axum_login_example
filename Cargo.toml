@@ -8,8 +8,7 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.36.0", features = ["full"] }
 serde = { version = "1.0.197", features = ["derive"] }
-axum = { version= "0.7.5", features = ["ws"] }
+axum = { version= "0.7.5", features = ["multipart"] }
 diesel = { version = "2.1.0", features = ["postgres"] }
 dotenvy = "0.15"
 serde_json = "1.0.116"
-opencv = "0.91.2"
