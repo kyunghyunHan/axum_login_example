@@ -5,7 +5,9 @@ use crate::schema::users::user_id;
 use axum::{http::Error, response::Json, response::Json as JsonResponse};
 use diesel::prelude::*;
 use serde_json::{json, value, Value};
-
+use crate::model::upload::Upload;
+use axum::extract::Multipart;
+use std::{fs::File, io::Write};
 pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
     use crate::schema::users::dsl::{user_id, user_pw, users};
     let connection = &mut establish_connection();
@@ -52,5 +54,24 @@ pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
         .execute(connection)
         .expect("error");
 
+    Json(json!({ "result": true }))
+}
+
+
+
+
+pub async fn update(mut multipart: Multipart) -> Json<Value> {
+    println!("{}", 1);
+    println!("{:?}", multipart);
+    while let Some(mut field) = multipart.next_field().await.unwrap() {
+        println!("{:?}",field.name());
+        let mut a = File::create("./img.jpg").unwrap();
+         a.write(&field.bytes().await.unwrap()).unwrap();
+         
+        // let name = field.name().unwrap().to_string();
+        // let data = field.bytes().await.unwrap();
+        // println!("Length of `{}` is {} bytes", name, data.len());
+        // println!("{:?}",data);
+    }
     Json(json!({ "result": true }))
 }

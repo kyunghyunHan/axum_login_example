@@ -27,6 +27,8 @@
             console.log(1);
             const formData = new FormData();
             formData.append("image", selectedImage);
+            formData.append("id", "abcd");
+            formData.append("pw", "3456");
             fetch('http://localhost:3000/upload', {
                 method: 'POST',
                 body: formData
