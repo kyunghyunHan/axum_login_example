@@ -67,17 +67,17 @@
 
 <body>
     <div class="login-container">
-        <h1>Login</h1>
+        <h1>Sign Up</h1>
         <label for="id">ID</label>
         <input id="id" type="text" />
         <label for="pw">Password</label>
         <input id="pw" type="password" value="" />
-        <button onclick="login_btn()">Login</button>
+        <button onclick="back_btn()">Back</button>
         <button onclick="sign_btn()">Sign UP</button>
     </div>
 
     <script>
-        function login_btn() {
+        function sign_btn() {
             let id = document.getElementById("id");
             let pw = document.getElementById("pw");
             const data = { user_id: id.value, user_pw: pw.value };
@@ -108,8 +108,8 @@
                     console.error('There has been a problem with your fetch operation:', error);
                 });
         }
-        function sign_btn() {
-            location.href = 'http://localhost:3000/sign_up'
+        function back_btn() {
+            location.href = 'http://localhost:3000/'
         }
     </script>
 </body>

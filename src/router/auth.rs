@@ -6,7 +6,6 @@ use diesel::prelude::*;
 use serde_json::{json, value, Value};
 pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
     use crate::schema::users::dsl::{user_id, user_pw, users};
-    println!("1");
     let connection = &mut establish_connection();
     let results = users
         .filter(user_id.eq(&user.user_id))
@@ -17,3 +16,6 @@ pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
     }
     Json(json!({ "result": true }))
 }
+
+
+

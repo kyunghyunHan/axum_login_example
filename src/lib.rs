@@ -9,10 +9,11 @@ use axum::{
 
 use router::{
     auth::login,
-    pages::{error, index, success,upload_page},
+    pages::{error, index, success, upload_page,sign_up_page},
     upload::upload,
 };
 use tokio;
+
 pub async fn run() {
     let app = Router::new()
         .route("/", get(index))
@@ -20,7 +21,8 @@ pub async fn run() {
         .route("/success", get(success))
         .route("/error", get(error))
         .route("/uploadpage", get(upload_page))
-        .route("/upload", post(upload));
+        .route("/upload", post(upload))
+        .route("/sign_up", get(sign_up_page));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
