@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <style>
+        /* 스타일링 */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-name {
+            margin-right: 10px;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>User List</h2>
+    <ul id="user-list">
+        <!-- 여기에 사용자 목록이 자동으로 추가될 것입니다. -->
+    </ul>
+
+    <!-- 사용자 목록에 추가할 때 사용할 템플릿 -->
+    <template id="user-template">
+        <li>
+            <span class="user-name"></span>
+            <button class="btn-delete">탈퇴처리</button>
+        </li>
+    </template>
+
+    <script>
+        fetch('http://localhost:3000/get_users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+
+
+                const userList = document.getElementById("user-list");
+                const template = document.getElementById("user-template");
+
+                data.users.forEach(user => {
+                    const clone = document.importNode(template.content, true);
+                    clone.querySelector(".user-name").textContent = user.user_id;
+                    clone.querySelector(".btn-delete").addEventListener("click", () => deleteUser(user.user_id));
+                    userList.appendChild(clone);
+                });
+
+                document.addEventListener("DOMContentLoaded", renderUserList);
+
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+
+        // 사용자를 삭제하는 함수 (실제로는 서버와 통신하여 삭제해야 함)
+        function deleteUser(userId) {
+
+            const data = { user_id: userId };
+            fetch('http://localhost:3000/secession', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("사용자 를 삭제했습니다")
+                    window.location.reload(true)
+                })
+
+        }
+
+        // 페이지가 로드되면 사용자 목록을 렌더링
+    </script>
+</body>
+
+</html>
