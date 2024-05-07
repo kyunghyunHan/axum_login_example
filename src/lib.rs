@@ -1,8 +1,8 @@
 pub mod db;
 pub mod model;
 pub mod router;
+pub mod schema;
 use axum::{
-    response::Response,
     routing::{get, post},
     Router,
 };

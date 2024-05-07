@@ -1,13 +1,19 @@
-use crate::model::auth::LoginUser;
-use axum::response::Json;
-use serde_json::{json, Value};
-
-pub async fn login(Json(user): Json<LoginUser>) -> Json<Value> {
-    println!("{}", user.id);
-    println!("{}", user.pw);
-    if user.id == "abcd" && user.pw == "1234" {
-        Json(json!({ "result": true }))
-    } else {
-        Json(json!({ "data": false }))
+use crate::db::connection::establish_connection;
+use crate::model::auth::{User,LoginUser};
+// use crate::schema::users::dsl::*;
+use axum::{http::Error, response::Json, response::Json as JsonResponse};
+use diesel::prelude::*;
+use serde_json::{json, value, Value};
+pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
+    use crate::schema::users::dsl::{user_id, user_pw, users};
+    println!("1");
+    let connection = &mut establish_connection();
+    let results = users
+        .filter(user_id.eq(&user.user_id))
+        .load::<User>(connection)
+        .expect("Error loading posts");
+    if results.len() == 0 {
+        
     }
+    Json(json!({ "result": true }))
 }

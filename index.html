@@ -79,7 +79,7 @@
         function login_btn() {
             let id = document.getElementById("id");
             let pw = document.getElementById("pw");
-            const data = { id: id.value, pw: pw.value };
+            const data = { user_id: id.value, user_pw: pw.value };
             fetch('http://localhost:3000/login', {
                 method: 'POST',
                 headers: {
