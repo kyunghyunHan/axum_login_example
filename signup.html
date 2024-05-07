@@ -80,8 +80,8 @@
         function sign_btn() {
             let id = document.getElementById("id");
             let pw = document.getElementById("pw");
-            const data = { user_id: id.value, user_pw: pw.value };
-            fetch('http://localhost:3000/login', {
+            const data = { user_id: id.value, user_pw: pw.value,img:"" };
+            fetch('http://localhost:3000/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
