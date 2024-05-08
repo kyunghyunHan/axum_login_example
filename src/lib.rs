@@ -8,9 +8,8 @@ use axum::{
 };
 
 use router::{
-    auth::{get_users, login, sign_up,secession,update},
+    auth::{get_user, get_users, login, secession, sign_up, update},
     pages::{admin, error, index, sign},
-
 };
 use tokio;
 
@@ -24,6 +23,7 @@ pub async fn run() {
         .route("/signup", post(sign_up))
         .route("/admin", get(admin))
         .route("/get_users", post(get_users))
+        .route("/get_user", post(get_user))
         .route("/secession", post(secession));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")

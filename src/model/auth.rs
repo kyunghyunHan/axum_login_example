@@ -28,3 +28,8 @@ pub struct NewUser{
 pub struct DeleteUser{
     pub user_id: String,
 }
+#[derive(Insertable,Queryable,Selectable,  Debug, Deserialize, Serialize)]
+#[diesel(table_name = users)]
+pub struct UserID{
+    pub id: i32,
+}

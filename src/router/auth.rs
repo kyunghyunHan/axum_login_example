@@ -1,7 +1,6 @@
 use crate::db::connection::establish_connection;
-use crate::model::auth::{DeleteUser, LoginUser, NewUser, User};
+use crate::model::auth::{DeleteUser, LoginUser, NewUser, User, UserID};
 use crate::schema::users::user_id;
-// use crate::schema::users::dsl::*;
 use crate::model::upload::Upload;
 use axum::extract::Multipart;
 use axum::{http::Error, response::Json, response::Json as JsonResponse};
@@ -19,7 +18,6 @@ pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
 
     Json(json!({ "result": true,"id":results.id}))
 }
-
 pub async fn sign_up(user: axum::Json<NewUser>) -> JsonResponse<Value> {
     use crate::schema::users;
 
@@ -43,9 +41,19 @@ pub async fn get_users() -> JsonResponse<Value> {
     use crate::schema::users::dsl::users; // user_id, user_pw 필요 없음
     let connection = &mut establish_connection();
     let results = users.load::<User>(connection).expect("Error loading users");
-
     // 사용자 목록을 JSON으로 변환하여 반환
     Json(json!({ "users": results }))
+}
+
+pub async fn get_user(user: axum::Json<UserID>) -> JsonResponse<Value> {
+    use crate::schema::users::dsl::{users,id}; // user_id, user_pw 필요 없음
+    let connection = &mut establish_connection();
+    let results = users
+    .filter(id.eq(&user.id))
+    .first::<User>(connection)
+    .expect("Error loading posts");
+    println!("{:?}",results);
+    Json(json!({ "id": 1 }))
 }
 pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
     use crate::schema::users::dsl::users; // user_id, user_pw 필요 없음
@@ -53,10 +61,8 @@ pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
     diesel::delete(users.filter(user_id.eq(&user.user_id)))
         .execute(connection)
         .expect("error");
-
     Json(json!({ "result": true }))
 }
-
 pub async fn update(mut multipart: Multipart) -> Json<Value> {
     let connection = &mut establish_connection();
     use crate::schema::users::dsl::{users,img};
@@ -76,11 +82,6 @@ pub async fn update(mut multipart: Multipart) -> Json<Value> {
             let mut fs = File::create(filename).unwrap();
             fs.write(&field.bytes().await.unwrap()).unwrap();
         }
-
-        // let name = field.name().unwrap().to_string();
-        // let data = field.bytes().await.unwrap();
-        // println!("Length of `{}` is {} bytes", name, data.len());
-        // println!("{:?}",data);s
     }
     Json(json!({ "result": true }))
 }
