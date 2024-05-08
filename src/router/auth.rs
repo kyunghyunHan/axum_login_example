@@ -53,7 +53,7 @@ pub async fn get_user(user: axum::Json<UserID>) -> JsonResponse<Value> {
     .first::<User>(connection)
     .expect("Error loading posts");
     println!("{:?}",results);
-    Json(json!({ "id": 1 }))
+    Json(json!({ "id": results.user_id,"pw":results.user_pw,"img":results.img}))
 }
 pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
     use crate::schema::users::dsl::users; // user_id, user_pw 필요 없음
@@ -66,20 +66,20 @@ pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
 pub async fn update(mut multipart: Multipart) -> Json<Value> {
     let connection = &mut establish_connection();
     use crate::schema::users::dsl::{users,img};
+    let filename = format!("./img/{}.jpg", Uuid::new_v4());
 
     while let Some(mut field) = multipart.next_field().await.unwrap() {
         
-        let filename = format!("./img/{}.jpg", Uuid::new_v4());
 
         if field.name().unwrap() == "id" {
             let id = field.text().await.unwrap().parse::<i32>().unwrap();
             diesel::update(users.find(id))
-            .set(img.eq(filename))
+            .set(img.eq(&filename))
             .returning(User::as_returning())
             .get_result(connection)
             .unwrap();
         } else if field.name().unwrap() == "image" {
-            let mut fs = File::create(filename).unwrap();
+            let mut fs = File::create(&filename).unwrap();
             fs.write(&field.bytes().await.unwrap()).unwrap();
         }
     }

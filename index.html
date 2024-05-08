@@ -66,6 +66,7 @@
 </head>
 
 <body>
+
     <div id="login_container" class="login-container">
         <h1>Login</h1>
         <label for="id">ID</label>
@@ -78,23 +79,21 @@
     <div id="login_success" style="display: none;">
         <h1>Login Success</h1>
         <div id="user_info"></div>
-
         <input id="imageInput" type="file" accept="image/*" onchange="handleImageUpload(event)">
         <button onclick="uploadImage()">Upload</button>
-
         <button onclick="logout_btn()">Login</button>
 
 
     </div>
 
     <script>
-         function fetchAndDisplayUserInfo(token) {
+        function fetchAndDisplayUserInfo(token) {
             fetch('http://localhost:3000/get_user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify( { id:Number(token) })
+                body: JSON.stringify({ id: Number(token) })
             })
                 .then(response => {
                     if (!response.ok) {
@@ -104,21 +103,24 @@
                 })
                 .then(data => {
                     console.log(data.id);
+                    console.log(data.pw);
+                    console.log(data.img);
+
+                    const userInfoDiv = document.getElementById("user_info");
+                    // 사용자 정보를 HTML에 추가
+                    userInfoDiv.innerHTML = `
+        <p>User ID: ${data.id}</p>
+        <p>User Name: ${data.pw}</p>
+        <img src="${data.img}" />
+    `;
+
+
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
         }
 
-        function displayUserInfo(userInfo) {
-            const userInfoDiv = document.getElementById("user_info");
-            // 사용자 정보를 HTML에 추가
-            userInfoDiv.innerHTML = `
-        <p>User ID: ${userInfo.id}</p>
-        <p>User Name: ${userInfo.name}</p>
-        <!-- 이하 필요한 사용자 정보 추가 -->
-    `;
-        }
 
         let id = document.getElementById("id");
         let pw = document.getElementById("pw");

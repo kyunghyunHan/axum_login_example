@@ -24,7 +24,9 @@ pub async fn run() {
         .route("/admin", get(admin))
         .route("/get_users", post(get_users))
         .route("/get_user", post(get_user))
-        .route("/secession", post(secession));
+        .route("/secession", post(secession))
+        .nest("/img", axum_static::static_router("img"));
+
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
