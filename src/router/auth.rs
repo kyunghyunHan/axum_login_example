@@ -13,10 +13,10 @@ pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
     let connection = &mut establish_connection();
     let results = users
         .filter(user_id.eq(&user.user_id))
-        .load::<User>(connection)
+        .first::<User>(connection)
         .expect("Error loading posts");
-    if results.len() == 0 {}
-    Json(json!({ "result": true }))
+
+    Json(json!({ "result": true,"id":results.id}))
 }
 
 pub async fn sign_up(user: axum::Json<NewUser>) -> JsonResponse<Value> {
@@ -35,7 +35,6 @@ pub async fn sign_up(user: axum::Json<NewUser>) -> JsonResponse<Value> {
         .returning(User::as_returning())
         .get_result(connection)
         .expect("Error saving new post");
-
     Json(json!({ "result": true }))
 }
 
@@ -65,13 +64,14 @@ pub async fn update(mut multipart: Multipart) -> Json<Value> {
     println!("{:?}", multipart);
     while let Some(mut field) = multipart.next_field().await.unwrap() {
         println!("{:?}",field.name());
-        let mut a = File::create("./img.jpg").unwrap();
+    
+        let mut a = File::create("./img/img.jpg").unwrap();
          a.write(&field.bytes().await.unwrap()).unwrap();
          
         // let name = field.name().unwrap().to_string();
         // let data = field.bytes().await.unwrap();
         // println!("Length of `{}` is {} bytes", name, data.len());
-        // println!("{:?}",data);
+        // println!("{:?}",data);s
     }
     Json(json!({ "result": true }))
 }
