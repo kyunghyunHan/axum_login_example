@@ -2,12 +2,13 @@ use crate::db::connection::establish_connection;
 use crate::model::auth::{DeleteUser, LoginUser, NewUser, User};
 use crate::schema::users::user_id;
 // use crate::schema::users::dsl::*;
+use crate::model::upload::Upload;
+use axum::extract::Multipart;
 use axum::{http::Error, response::Json, response::Json as JsonResponse};
 use diesel::prelude::*;
 use serde_json::{json, value, Value};
-use crate::model::upload::Upload;
-use axum::extract::Multipart;
 use std::{fs::File, io::Write};
+use uuid::Uuid;
 pub async fn login(user: axum::Json<LoginUser>) -> JsonResponse<Value> {
     use crate::schema::users::dsl::{user_id, user_pw, users};
     let connection = &mut establish_connection();
@@ -56,18 +57,26 @@ pub async fn secession(user: axum::Json<DeleteUser>) -> JsonResponse<Value> {
     Json(json!({ "result": true }))
 }
 
-
-
-
 pub async fn update(mut multipart: Multipart) -> Json<Value> {
-    println!("{}", 1);
-    println!("{:?}", multipart);
+    let connection = &mut establish_connection();
+    use crate::schema::users::dsl::{users,img};
+
     while let Some(mut field) = multipart.next_field().await.unwrap() {
-        println!("{:?}",field.name());
-    
-        let mut a = File::create("./img/img.jpg").unwrap();
-         a.write(&field.bytes().await.unwrap()).unwrap();
-         
+        
+        let filename = format!("./img/{}.jpg", Uuid::new_v4());
+
+        if field.name().unwrap() == "id" {
+            let id = field.text().await.unwrap().parse::<i32>().unwrap();
+            diesel::update(users.find(id))
+            .set(img.eq(filename))
+            .returning(User::as_returning())
+            .get_result(connection)
+            .unwrap();
+        } else if field.name().unwrap() == "image" {
+            let mut fs = File::create(filename).unwrap();
+            fs.write(&field.bytes().await.unwrap()).unwrap();
+        }
+
         // let name = field.name().unwrap().to_string();
         // let data = field.bytes().await.unwrap();
         // println!("Length of `{}` is {} bytes", name, data.len());

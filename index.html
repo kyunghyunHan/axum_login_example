@@ -66,7 +66,7 @@
 </head>
 
 <body>
-    <div id ="login_container" class="login-container">
+    <div id="login_container" class="login-container">
         <h1>Login</h1>
         <label for="id">ID</label>
         <input id="id" type="text" />
@@ -77,7 +77,9 @@
     </div>
     <div id="login_success" style="display: none;">
         <h1>Login Success</h1>
-         <button onclick="logout_btn()">Login</button>
+        <input id="imageInput" type="file" accept="image/*" onchange="handleImageUpload(event)">
+        <button onclick="uploadImage()">Upload</button>
+        <button onclick="logout_btn()">Login</button>
 
 
     </div>
@@ -90,11 +92,11 @@
         let token = localStorage.getItem('accessToken');
 
         if (token != null) {
-            login_container.style.display="none";
-            login_success.style.display="block";
-        }else{
-            login_container.style.display="block";
-            login_success.style.display="none";
+            login_container.style.display = "none";
+            login_success.style.display = "block";
+        } else {
+            login_container.style.display = "block";
+            login_success.style.display = "none";
         }
         function login_btn() {
 
@@ -133,6 +135,40 @@
             localStorage.removeItem('accessToken');
             window.location.reload(true);
 
+        }
+        let selectedImage = null;
+
+        function handleImageUpload(event) {
+            selectedImage = event.target.files[0];
+        }
+
+        function uploadImage() {
+            if (!selectedImage) {
+                alert("Please select an image to upload.");
+                return;
+            }
+            console.log(1);
+            const formData = new FormData();
+            formData.append("image", selectedImage);
+            formData.append("id", token);
+            fetch('http://localhost:3000/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(responseData => {
+                    console.log(responseData);
+                    alert("Image uploaded successfully!");
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    alert("Failed to upload image.");
+                });
         }
     </script>
 </body>

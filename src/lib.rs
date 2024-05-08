@@ -9,7 +9,7 @@ use axum::{
 
 use router::{
     auth::{get_users, login, sign_up,secession,update},
-    pages::{admin, error, index, sign, success, upload_page},
+    pages::{admin, error, index, sign},
 
 };
 use tokio;
@@ -18,9 +18,7 @@ pub async fn run() {
     let app = Router::new()
         .route("/", get(index))
         .route("/login", post(login))
-        .route("/success", get(success))
         .route("/error", get(error))
-        .route("/uploadpage", get(upload_page))
         .route("/upload", post(update))
         .route("/sign", get(sign))
         .route("/signup", post(sign_up))
